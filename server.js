@@ -1,45 +1,31 @@
+var express = require("express");
 
-// var express = require("express");
-// var app = express();
-// var bodyParser = require("body-parser");
+// bring in the models
+var db = require("./models");
 
-// var port = process.env.PORT || 3000;
+var app = express();
+// Serve static content
+app.use(express.static("public"));
 
-// app.use(express.static("public"));
-
-// app.use(bodyParser.urlencoded({extended: false}));
-
-
-// var exphbs = require("express-handlebars");
-
-// app.engine("handlebars", exphbs({defaultLayout: "main"}));
-// app.set("view engine", "handlebars");
-
-// var routes = require("./controllers/burgers_controller.js");
-
-// app.use("/", routes);
-
-// app.listen(port, function() {
-//     console.log("Server listening on: http://localhost:" + port);
-// });
-
-const express = require("express");
-const app = express();
-const PORT = process.env.PORT || 8080;
-
+// Parse req body JSON
 app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
 
-const exphbs = require("express-handlebars");
+var exphbs = require("express-handlebars");
 
-app.engine("handlebars", exphbs({ defaultLayout: "main" }));
+app.engine("handlebars", exphbs({
+  defaultLayout: "main"
+}));
 app.set("view engine", "handlebars");
 
-app.use(express.static("public"));
+var routes = require("./controllers/burgers_controller");
 
-const routes = require('./controllers/burgers_controller');
-app.use("/", routes);
+app.use(routes);
 
-app.listen(PORT, function() {
-    console.log("Server listening on: http://localhost:" + PORT);
+// listen on port 3000
+var PORT = process.env.PORT || 3000;
+db.sequelize.sync().then(function() {
+  app.listen(PORT, function() {
+    console.log("App listening on PORT " + PORT);
+  });
 });
